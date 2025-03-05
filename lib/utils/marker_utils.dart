@@ -10,7 +10,7 @@ import '../data/cluster.dart';
 class MarkerUtils {
   final Map<String, BitmapDescriptor> _cachedBitmaps = {};
 
-  Future<Marker> Function(Cluster) get basicMarkerBuilder => (cluster) async {
+  Future<Marker> Function(Cluster) get basicMarker => (cluster) async {
         return Marker(
           markerId: MarkerId(cluster.getId()),
           position: cluster.location,
@@ -22,6 +22,18 @@ class MarkerUtils {
           icon: await _getBitmap(cluster),
         );
       };
+
+  Future<Marker> Function(Cluster) get offBoundMarker => (cluster) async {
+        return Marker(
+          markerId: MarkerId(cluster.getId()),
+          position: cluster.location,
+          icon: await _getOffBoundBitmap(),
+        );
+      };
+
+  Future<BitmapDescriptor> _getOffBoundBitmap() async {
+    return await _buildBasicBitmap(24, color: Color(0xFF1C1F32));
+  }
 
   Future<BitmapDescriptor> _getBitmap(Cluster cluster) async {
     if (!cluster.isMultiple) {
@@ -37,10 +49,11 @@ class MarkerUtils {
   Future<BitmapDescriptor> _buildBasicBitmap(
     int size, {
     String? text,
+    Color color = const Color(0xFF4CAF50),
   }) async {
     final pictureRecorder = PictureRecorder();
     final canvas = Canvas(pictureRecorder);
-    final paint1 = Paint()..color = Color(0xFF4CAF50);
+    final paint1 = Paint()..color = color;
 
     canvas.drawCircle(Offset(size / 2, size / 2), size / 2.0, paint1);
 

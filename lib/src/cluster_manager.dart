@@ -39,7 +39,7 @@ class ClusterManager<T extends ClusterItem> {
   final Future<Marker> Function(Cluster<T>)? markerBuilder;
 
   Future<Marker> Function(Cluster<T>) get _markerBuilder =>
-      markerBuilder ?? _markerUtils.basicMarkerBuilder;
+      markerBuilder ?? _markerUtils.basicMarker;
 
   /// Clustering options
   final ClusteringOptions options;
@@ -140,7 +140,7 @@ class ClusterManager<T extends ClusterItem> {
           if (mapBounds.contains(e.location)) {
             return _markerBuilder.call(e);
           }
-          return _markerUtils.basicMarkerBuilder.call(e);
+          return _markerUtils.offBoundMarker.call(e);
         }),
       );
 
