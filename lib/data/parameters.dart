@@ -53,14 +53,11 @@ class ClusteringOptions {
 class MaxDistParams {
   MaxDistParams({
     required this.epsilon,
-    required this.maxItemsForMaxDistAlgo,
+    this.maxItemsForMaxDistAlgo = Constants.maxItemsForMaxDistAlgo,
   });
 
   factory MaxDistParams.basic() {
-    return MaxDistParams(
-      epsilon: 1,
-      maxItemsForMaxDistAlgo: Constants.maxItemsForMaxDistAlgo,
-    );
+    return MaxDistParams(epsilon: 1);
   }
 
   final double epsilon;
