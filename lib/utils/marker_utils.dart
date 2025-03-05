@@ -32,7 +32,7 @@ class MarkerUtils {
       };
 
   Future<BitmapDescriptor> _getOffBoundBitmap() async {
-    return await _buildBasicBitmap(24, color: Color(0xFF1C1F32));
+    return await _buildBasicBitmap(10, color: Color(0xFF1C1F32));
   }
 
   Future<BitmapDescriptor> _getBitmap(Cluster cluster) async {
