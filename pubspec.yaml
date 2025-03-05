@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
 
   google_maps_flutter_platform_interface: ^2.11.1
+  widget_to_marker: ^1.0.6
+
 
 dev_dependencies:
   flutter_test:

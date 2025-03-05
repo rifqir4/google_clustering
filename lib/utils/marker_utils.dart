@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
     hide Cluster;
+import 'package:widget_to_marker/widget_to_marker.dart';
 
 import '../data/cluster.dart';
 
@@ -27,13 +28,9 @@ class MarkerUtils {
         return Marker(
           markerId: MarkerId(cluster.getId()),
           position: cluster.location,
-          icon: await _getOffBoundBitmap(),
+          icon: await _buildOffBoundBitmap(),
         );
       };
-
-  Future<BitmapDescriptor> _getOffBoundBitmap() async {
-    return await _buildBasicBitmap(10, color: Color(0xFF1C1F32));
-  }
 
   Future<BitmapDescriptor> _getBitmap(Cluster cluster) async {
     if (!cluster.isMultiple) {
@@ -81,5 +78,23 @@ class MarkerUtils {
     if (data == null) return BitmapDescriptor.defaultMarker;
 
     return BitmapDescriptor.bytes(data.buffer.asUint8List());
+  }
+
+  Future<BitmapDescriptor> _buildOffBoundBitmap() async {
+    final widget = Container(
+      clipBehavior: Clip.antiAlias,
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFF1C1F32),
+        border: Border.all(
+          color: Colors.white,
+          width: 1,
+        ),
+      ),
+    );
+
+    return await widget.toBitmapDescriptor();
   }
 }
