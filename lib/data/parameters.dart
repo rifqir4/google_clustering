@@ -4,8 +4,8 @@ import 'package:google_clustering/utils/constants.dart';
 class ClusteringOptions {
   ClusteringOptions({
     this.onlyInBounds = true,
-    required this.levels,
-    required this.extraPercent,
+    this.levels = const [1, 4.25, 6.75, 8.25, 11.5, 14.5, 16.0, 16.5, 20.0],
+    this.extraPercent = 0.5,
     EdgeInsets? padding,
     this.stopClusteringZoom,
     double? devicePixelRatio,
@@ -19,10 +19,7 @@ class ClusteringOptions {
                 .instance.platformDispatcher.views.first.devicePixelRatio;
 
   factory ClusteringOptions.basic() {
-    return ClusteringOptions(
-      levels: [1, 4.25, 6.75, 8.25, 11.5, 14.5, 16.0, 16.5, 20.0],
-      extraPercent: 0.5,
-    );
+    return ClusteringOptions();
   }
 
   /// If true, only clusters that are fully in bounds are rendered
