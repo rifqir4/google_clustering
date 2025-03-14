@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:example/data/place.dart';
+import 'package:example/data/resources.dart';
 import 'package:flutter/material.dart';
 import 'package:google_clustering/google_clustering.dart' as gc;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -42,22 +45,43 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  GoogleMapController? _controller;
   late gc.ClusterManager<Place> _clusterManager;
 
   Set<Marker> markers = {};
+  Set<Circle> circles = {};
+
+  double lastZoom = 1;
+  double zoomlevel = 1;
+  double radius = 1000;
 
   @override
   void initState() {
+    _clusterManager = _initClusterManager();
     super.initState();
   }
 
-  gc.ClusterManager _initClusterManager() {
+  gc.ClusterManager<Place> _initClusterManager() {
     return gc.ClusterManager<Place>(
-      [],
+      Resources.places1,
       _updateMarkers,
-      options: gc.ClusteringOptions(
-        onlyInBounds: true,
-      ),
+      markerBuilder: _buildMarker,
+      options: gc.ClusteringOptions(onlyInBounds: true, levels: [
+        1,
+        2.5,
+        3.5,
+        4.25,
+        6.75,
+        8.25,
+        11.5,
+        12.5,
+        13.5,
+        14.5,
+        16.0,
+        16.5,
+        20.0,
+      ]),
+      clusterAlgorithm: gc.ClusterAlgorithm.dbscan,
     );
   }
 
@@ -67,11 +91,49 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<Marker> _buildMarker(gc.Cluster<Place> cluster) async {
+    return Marker(
+      markerId: MarkerId(cluster.getId()),
+      position: cluster.location,
+      icon: BitmapDescriptor.defaultMarker,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text("Google Clustering"),
+      body: GoogleMap(
+        minMaxZoomPreference: MinMaxZoomPreference(8, 16),
+        padding: EdgeInsets.only(
+          top: 100,
+          bottom: 50,
+        ),
+        initialCameraPosition: const CameraPosition(
+          target: LatLng(37.42796133580664, -122.085749655962),
+          zoom: 10,
+        ),
+        markers: markers,
+        circles: markers
+            .map((e) => Circle(
+                  circleId: CircleId(e.markerId.value),
+                  center: e.position,
+                  radius: 1000 * (pow(2, (21 - zoomlevel)).toDouble()) * 0.0027,
+                  fillColor: Colors.blue.withOpacity(0.1),
+                  strokeWidth: 0,
+                ))
+            .toSet(),
+        onCameraMove: (position) {
+          _clusterManager.onCameraMove(position);
+          zoomlevel = position.zoom;
+        },
+        onCameraIdle: () {
+          _clusterManager.updateMap();
+          lastZoom = zoomlevel;
+        },
+        onMapCreated: (controller) {
+          _controller = controller;
+          _clusterManager.setMapId(controller.mapId);
+        },
       ),
     );
   }
