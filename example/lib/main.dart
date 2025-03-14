@@ -66,22 +66,13 @@ class _MyHomePageState extends State<MyHomePage> {
       Resources.places1,
       _updateMarkers,
       markerBuilder: _buildMarker,
-      options: gc.ClusteringOptions(onlyInBounds: true, levels: [
-        1,
-        2.5,
-        3.5,
-        4.25,
-        6.75,
-        8.25,
-        11.5,
-        12.5,
-        13.5,
-        14.5,
-        16.0,
-        16.5,
-        20.0,
-      ]),
+      options: gc.ClusteringOptions(
+        onlyInBounds: true,
+      ),
       clusterAlgorithm: gc.ClusterAlgorithm.dbscan,
+      dbScanParams: gc.DbScanParams(
+        radius: 25,
+      ),
     );
   }
 

@@ -33,30 +33,43 @@ class DistanceUtils {
 // 19	274 877 906 944	0.0005	0.298	1:1 thousand	local highway and crossing details
 // 20	1 099 511 627 776	0.00025	0.149	1:5 hundred	A mid-sized building
   final Map<(LatLng, LatLng), double> distCache = {};
+  final Map<(LatLng, LatLng), double> distMCache = {};
+
+  double getCalculatedEpsilon(double epsilon, int zoomLevel) {
+    final meterPerPixel = _getScalingFactor(zoomLevel);
+    return epsilon / (meterPerPixel / 1000);
+  }
 
   double getLatLonDist(LatLng point1, LatLng point2, int zoomLevel) {
     if (distCache[(point1, point2)] != null) {
       return distCache[(point1, point2)]!;
     }
     final meterPerPixel = _getScalingFactor(zoomLevel);
-    final dist = getDistanceFromLatLonInKm(
-          point1.latitude,
-          point1.longitude,
-          point2.latitude,
-          point2.longitude,
-        ) /
-        (meterPerPixel / 1000);
+    final dist =
+        getDistanceFromLatLonInKm(point1, point2) / (meterPerPixel / 1000);
     // print("dist is $x");
     distCache[(point1, point2)] = dist;
     return dist;
   }
 
-  double getDistanceFromLatLonInKm(
-    double lat1,
-    double lon1,
-    double lat2,
-    double lon2,
+  double getLatLonDistInM(
+    LatLng point1,
+    LatLng point2,
   ) {
+    final dist = getDistanceFromLatLonInKm(point1, point2);
+    distMCache[(point1, point2)] = dist;
+    return dist;
+  }
+
+  double getDistanceFromLatLonInKm(
+    LatLng point1,
+    LatLng point2,
+  ) {
+    final lat1 = point1.latitude;
+    final lon1 = point1.longitude;
+    final lat2 = point2.latitude;
+    final lon2 = point2.longitude;
+
     const R = 6371; // Radius of the earth in km
     final dLat = _degreeToRadian(lat2 - lat1);
     final dLon = _degreeToRadian(lon2 - lon1);

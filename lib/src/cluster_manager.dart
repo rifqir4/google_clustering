@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:google_clustering/src/clustering_dbscan.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
     hide Cluster;
 
@@ -20,10 +21,12 @@ class ClusterManager<T extends ClusterItem> {
     ClusteringOptions? options,
     this.clusterAlgorithm = ClusterAlgorithm.geoHash,
     MaxDistParams? maxDistParams,
+    DbScanParams? dbScanParams,
   })  : _items = initialItems,
         _markerUtils = MarkerUtils(),
         options = options ?? ClusteringOptions.basic(),
-        maxDistParams = maxDistParams ?? MaxDistParams.basic();
+        maxDistParams = maxDistParams ?? MaxDistParams.basic(),
+        dbScanParams = dbScanParams ?? DbScanParams();
 
   /// List of items
   Iterable<T> _items;
@@ -48,6 +51,8 @@ class ClusterManager<T extends ClusterItem> {
   final ClusterAlgorithm clusterAlgorithm;
 
   final MaxDistParams maxDistParams;
+
+  final DbScanParams dbScanParams;
 
   /* Utils Variable */
   /// Google Maps map id
@@ -117,8 +122,12 @@ class ClusterManager<T extends ClusterItem> {
         List.empty(growable: true),
         level: level,
       );
-    } else {
+    } else if (clusterAlgorithm == ClusterAlgorithm.maxDist) {
       markers = _computeClustersWithMaxDist(processedItems);
+    } else if (clusterAlgorithm == ClusterAlgorithm.dbscan) {
+      markers = _computeClustersWithDbScan(items.toList());
+    } else {
+      markers = [];
     }
 
     return markers;
@@ -280,5 +289,16 @@ class ClusterManager<T extends ClusterItem> {
     );
 
     return scanner.run(inputItems, _getZoomLevel(_zoom));
+  }
+
+  List<Cluster<T>> _computeClustersWithDbScan(List<T> inputItems) {
+    final scanner = DbscanClustering(
+      points: inputItems,
+      radius: dbScanParams.radius,
+      minPts: dbScanParams.minPoints,
+      zoomLevel: _zoom.toInt(),
+    );
+
+    return scanner.run();
   }
 }

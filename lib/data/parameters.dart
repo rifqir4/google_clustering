@@ -63,3 +63,13 @@ class MaxDistParams {
   final double epsilon;
   final int maxItemsForMaxDistAlgo;
 }
+
+class DbScanParams {
+  DbScanParams({
+    this.radius = 15,
+    this.minPoints = 2,
+  });
+
+  final double radius;
+  final int minPoints;
+}
