@@ -10,14 +10,18 @@ class DbscanClustering<T extends ClusterItem> {
     required this.radius,
     required this.minPts,
     required this.zoomLevel,
-  }) : clusters = List.filled(points.length, 0);
+    this.devicePixelRatio = 1,
+  })  : clusters = List.filled(points.length, 0),
+        _distUtils = DistanceUtils(devicePixelRatio: devicePixelRatio);
 
   final List<T> points;
   final double radius;
   final int minPts;
   final int zoomLevel;
+  final double devicePixelRatio;
+  final DistanceUtils _distUtils;
 
-  final DistanceUtils _distUtils = DistanceUtils();
+  double get _radius => _distUtils.getCalculatedEpsilon(radius);
 
   List<int> clusters;
 
@@ -52,7 +56,7 @@ class DbscanClustering<T extends ClusterItem> {
         zoomLevel,
       );
 
-      if (distance <= radius) {
+      if (distance <= _radius) {
         neighbors.add(j);
       }
     }

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
 class DistanceUtils {
+  DistanceUtils({this.devicePixelRatio = 1});
 // Zoom-Level:
 // Level	# Tiles	Tile width
 // (° of longitudes)	m / pixel
@@ -32,19 +33,21 @@ class DistanceUtils {
 // 18	68 719 476 736	0.001	0.596	1:2 thousand	some buildings, trees
 // 19	274 877 906 944	0.0005	0.298	1:1 thousand	local highway and crossing details
 // 20	1 099 511 627 776	0.00025	0.149	1:5 hundred	A mid-sized building
+  final double devicePixelRatio;
+
   final Map<(LatLng, LatLng), double> distCache = {};
   final Map<(LatLng, LatLng), double> distMCache = {};
 
-  double getCalculatedEpsilon(double epsilon, int zoomLevel) {
-    final meterPerPixel = _getScalingFactor(zoomLevel);
-    return epsilon / (meterPerPixel / 1000);
+  double getCalculatedEpsilon(double epsilon) {
+    final meterPerPixel = epsilon * devicePixelRatio;
+    return meterPerPixel;
   }
 
   double getLatLonDist(LatLng point1, LatLng point2, int zoomLevel) {
     if (distCache[(point1, point2)] != null) {
       return distCache[(point1, point2)]!;
     }
-    final meterPerPixel = _getScalingFactor(zoomLevel);
+    final meterPerPixel = _getScalingFactor(zoomLevel) * devicePixelRatio;
     final dist =
         getDistanceFromLatLonInKm(point1, point2) / (meterPerPixel / 1000);
     // print("dist is $x");

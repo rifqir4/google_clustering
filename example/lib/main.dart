@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       clusterAlgorithm: gc.ClusterAlgorithm.dbscan,
       dbScanParams: gc.DbScanParams(
-        radius: 25,
+        radius: 5,
       ),
     );
   }

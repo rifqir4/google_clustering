@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:google_clustering/src/clustering_dbscan.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart'
     hide Cluster;
 
@@ -10,6 +9,7 @@ import '../data/parameters.dart';
 import '../utils/extensions.dart';
 import '../utils/marker_utils.dart';
 import './clustering_max_dist.dart';
+import 'clustering_dbscan.dart';
 
 enum ClusterAlgorithm { geoHash, maxDist, dbscan }
 
@@ -297,6 +297,7 @@ class ClusterManager<T extends ClusterItem> {
       radius: dbScanParams.radius,
       minPts: dbScanParams.minPoints,
       zoomLevel: _zoom.toInt(),
+      devicePixelRatio: options.devicePixelRatio,
     );
 
     return scanner.run();
